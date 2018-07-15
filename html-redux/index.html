@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <div>
+    <span id="span"></span>
+    <button id="add">加</button>
+  </div>
+  <script>
+    const initialState = {
+      num: 0
+    };
+    const createStore = reducer => {
+      let state;
+      let listeners = [];
+
+      const dispatch = action => {
+        state = JSON.parse(JSON.stringify(reducer(state, action)));
+        for (let i = 0; i < listeners.length; i++) {
+          const listener = listeners[i]
+          listener();
+        }
+      }
+      const getState = () => {
+        return state;
+      }
+      const subscribe = fn => {
+        listeners.push(fn);
+        // console.log(arr);
+      }
+      dispatch({});
+      return {
+        getState,
+        dispatch,
+        subscribe
+      };
+    }
+
+
+
+
+
+
+    let reducer = (state = initialState, action) => {
+      // console.log('reducer');
+      switch (action.type) {
+        case 'add':
+          return Object.assign({}, state, {
+            num: state.num += action.num
+          })
+        default:
+          return state;
+      }
+    }
+    let store = createStore(reducer);
+
+    function render() {
+      // console.log('render', initialState);
+      span.innerText = store.getState().num;
+    }
+    store.subscribe(render);
+    add.addEventListener('click', () => {
+      // console.log(1)
+      store.dispatch({
+        type: 'add',
+        num: 1
+      });
+    });
+    render();
+  </script>
+</body>
+
+</html>
